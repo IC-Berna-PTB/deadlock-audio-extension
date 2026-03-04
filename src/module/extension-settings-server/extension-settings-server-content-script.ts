@@ -2,13 +2,6 @@ import {base64ToObject, listenToExtensionMessage, postExtensionMessage} from "..
 import {ExtensionMessageId} from "../../common/extension-message";
 import {BooleanishNumber, ExtensionSettings} from "../../common/extension-settings";
 import {plainToInstance} from "class-transformer";
-import {ClickBehaviorOption} from "../strings-in-comments/settings/click-behavior-option";
-import {
-    DomainLanguage,
-    ProjectLanguage,
-    setDefaultLanguageForDomain,
-    setDefaultLanguageForProject
-} from "../default-language/default-language-helper";
 
 listenToExtensionMessage<unknown>(ExtensionMessageId.SETTINGS_REQUESTED_BY_MODULE, () => {
     getSettings().then(settings => postExtensionMessage(ExtensionMessageId.SETTINGS_RETRIEVED, settings))
@@ -50,47 +43,6 @@ function propagateUpdate(s: ExtensionSettings) {
     postExtensionMessage(ExtensionMessageId.SETTINGS_RETRIEVED, s);
 }
 
-listenToExtensionMessage<number>(ExtensionMessageId.SETTINGS_CLICK_BEHAVIOR_CHANGED, m => {
-    const newBehavior = ClickBehaviorOption.fromId(m);
-    if (newBehavior) {
-        getSettings().then(s => {
-            s.clickBehavior = newBehavior.id;
-            propagateUpdate(s);
-        });
-    }
-});
-
-
-listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_PREVENT_PRE_FILTERS_CHANGED, (no, s) => {
-    s.preventPreFilter = no;
-    return s;
-})
-
-listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_DARK_THEME_HTML_PREVIEW_CHANGED, (no, s) => {
-    s.darkThemeHtml = no;
-    return s;
-})
-
-listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_ALL_CONTENT_REDIRECT_CHANGED, (no, s) => {
-    s.allContentRedirect = no;
-    return s;
-})
-
-listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_HIGHLANDER_APPROVAL_CHANGED, (no, s) => {
-    s.highlanderApproval = no;
-    return s;
-})
-
-listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_EMBIGGEN_SUBMIT_CHANGED, (no, s) => {
-    s.embiggenSubmit = no;
-    return s;
-})
-
-listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_SUBMIT_COLOR_TOGGLE_CHANGED, (no, s) => {
-    s.submitColorEnabled = no;
-    return s;
-})
-
 function listenToBooleanSettingChange(messageId: ExtensionMessageId, apply: (newOption: BooleanishNumber, settings: ExtensionSettings) => ExtensionSettings) {
     listenToExtensionMessage<number>(messageId, m => {
         const newOption = m as BooleanishNumber;
@@ -103,51 +55,10 @@ function listenToBooleanSettingChange(messageId: ExtensionMessageId, apply: (new
     })
 }
 
-listenToExtensionMessage<DomainLanguage>(ExtensionMessageId.SETTINGS_DOMAIN_DEFAULT_LANGUAGE_CHANGED, m => {
-    if (m) {
-        getSettings().then(s => {
-            setDefaultLanguageForDomain(s, m.d, m.l, m.m);
-            propagateUpdate(s);
-        })
-    }
-})
-
-listenToExtensionMessage<ProjectLanguage>(ExtensionMessageId.SETTINGS_PROJECT_DEFAULT_LANGUAGE_CHANGED, m => {
-    if (m) {
-        getSettings().then(s => {
-            setDefaultLanguageForProject(s, m.d, m.p, m.l);
-            propagateUpdate(s);
-        })
-    }
-})
-
-listenToExtensionMessage<string>(ExtensionMessageId.SETTINGS_SUBMIT_COLOR_VALUE_CHANGED, m => {
-    if (m) {
-        getSettings().then(s => {
-            s.submitColorValue = m;
-            propagateUpdate(s);
-        })
-    }
-})
-
-listenToExtensionMessage<string>(ExtensionMessageId.SETTINGS_SUBMIT_DISABLED_COLOR_VALUE_CHANGED, m => {
-    if (m) {
-        getSettings().then(s => {
-            s.submitDisabledColorValue = m;
-            propagateUpdate(s);
-        })
-    }
-})
-
-
-listenToExtensionMessage(ExtensionMessageId.SETTINGS_NAGGED_ABOUT_DEFAULT_LANGUAGE, didIt => {
-    if (didIt) {
-        getSettings().then(s => {
-            s.naggedAboutDefaultLanguage = 1;
-            propagateUpdate(s);
-        })
-    }
-})
+listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_AUTOPLAY_CHANGED, (no, s) => {
+   s.autoplay = no;
+   return s;
+});
 
 listenToExtensionMessage<string>(
     ExtensionMessageId.SETTINGS_IMPORT_REQUESTED,

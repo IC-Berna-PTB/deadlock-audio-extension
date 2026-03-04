@@ -17,7 +17,7 @@ These are the modules that implement new, user-facing features.
 Parses Crowdin URLs in string comments and, if they link to a specific string (ends with `#<digits>`),
 has a search query, advanced filter or CroQL query, shows the results inline.
 
-Plus, when copying a URL for a specific string, if it has a key, the extension adds the `csic-key` query parameter
+Plus, when copying a URL for a specific string, if it has a key, the extension adds the `dlaudio-key` query parameter
 to the URL. This works as a fallback when the file is updated, the numeric Crowdin ID changes, but the key doesn't.
 
 ### Default language

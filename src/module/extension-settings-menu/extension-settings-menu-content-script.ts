@@ -6,14 +6,6 @@ import {
 } from "../../util/util";
 import {ExtensionMessage, ExtensionMessageId} from "../../common/extension-message";
 import {BooleanishNumber, ExtensionSettings,} from "../../common/extension-settings";
-import {ClickBehaviorOption} from "../strings-in-comments/settings/click-behavior-option";
-import {CommonContentScriptHelper} from "../common/common-content-script-helper";
-import {
-    DomainLanguage,
-    getDefaultLanguageForCurrentDomainInSettings,
-    getDefaultLanguageForDomain,
-    INVALID_LANGUAGE
-} from "../default-language/default-language-helper";
 import {exportSettings, requestSettings, requestSettingsImport} from "../../common/extension-settings-client";
 
 
@@ -35,71 +27,15 @@ class CommonMenu {
             const openMenuButton = CommonMenu.createMenuButtonElement();
             const dialog = CommonMenu.createSettingsDialog();
 
-            let dialogBody = dialog.querySelector("#csic-settings-dialog-body");
-            const clickBehavior = CommonMenu.createClickBehaviorSetting();
-            dialogBody.appendChild(clickBehavior);
-
-            const preventPreFilter = CommonMenu.createCheckboxSetting({
-                id: "csic-setting-prevent-pre-filter",
-                label: "Always open URLs without filters in  \"Show All\" mode",
-                helpText: "When opening an URL without filter parameters, prevent Crowdin " +
-                    "from applying your latest used filter (e.g. CroQL) automatically",
-                messageId: ExtensionMessageId.SETTINGS_PREVENT_PRE_FILTERS_CHANGED,
-                setting: (settings: ExtensionSettings) => !!settings.preventPreFilter
-            });
-            dialogBody.appendChild(preventPreFilter);
-
-            const darkThemeHtmlPreview = CommonMenu.createCheckboxSetting({
-                id: "csic-setting-dark-theme-html-preview",
-                label: "Force HTML preview in dark when using Crowdin in dark mode",
-                helpText: "When opening a HTML file, forces it to be in dark mode when Crowdin is also in dark mode",
-                messageId: ExtensionMessageId.SETTINGS_DARK_THEME_HTML_PREVIEW_CHANGED,
-                setting: (settings: ExtensionSettings) => !!settings.darkThemeHtml
-            });
-            dialogBody.appendChild(darkThemeHtmlPreview);
-
-            const allContentRedirect = CommonMenu.createCheckboxSetting({
-                id: "csic-setting-all-content-redirect",
-                label: "Autoredirect to \"All Content\" workflow if available",
-                messageId: ExtensionMessageId.SETTINGS_ALL_CONTENT_REDIRECT_CHANGED,
-                setting: (es) => !!es.allContentRedirect
-            });
-            dialogBody.appendChild(allContentRedirect);
-
-            CommonMenu.createDefaultLanguageSetting()
-                .then(l => dialogBody.prepend(l))
-
-            const highlanderApproval = CommonMenu.createCheckboxSetting({
-                id: "csic-setting-highlander-approval",
-                label: "Highlander Approval mode",
-                helpText: "When approving a suggestion, automatically remove all approvals from other suggestions",
-                messageId: ExtensionMessageId.SETTINGS_HIGHLANDER_APPROVAL_CHANGED,
-                setting: (es) => !!es.highlanderApproval
-            });
-            dialogBody.appendChild(highlanderApproval);
-
-            const embiggenSubmit = CommonMenu.createCheckboxSetting({
-                id: "csic-setting-embiggen-submit",
-                label: 'Show label for "Submit" button',
-                messageId: ExtensionMessageId.SETTINGS_EMBIGGEN_SUBMIT_CHANGED,
-                setting: (es) => !!es.embiggenSubmit
-            })
-            dialogBody.appendChild(embiggenSubmit);
-
+            let dialogBody = dialog.querySelector("#dlaudio-settings-dialog-body");
+            
             const submitColorToggle = CommonMenu.createCheckboxSetting({
-                id: "csic-setting-submit-color-toggle",
-                label: "Change \"Submit\" button color",
-                helpText: "If disabled, the color selected below won't be applied.",
-                messageId: ExtensionMessageId.SETTINGS_SUBMIT_COLOR_TOGGLE_CHANGED,
-                setting: (settings: ExtensionSettings) => !!settings.submitColorEnabled
+                id: "dlaudio-setting-autoplay",
+                label: "Autoplay audio when changing strings",
+                messageId: ExtensionMessageId.SETTINGS_AUTOPLAY_CHANGED,
+                setting: (settings: ExtensionSettings) => !!settings.autoplay
             })
             dialogBody.appendChild(submitColorToggle);
-
-            const submitColorValue = CommonMenu.createSubmitColorValueSetting();
-            dialogBody.appendChild(submitColorValue);
-
-            const submitDisabledColorValue = CommonMenu.createSubmitDisabledColorValueSetting();
-            dialogBody.appendChild(submitDisabledColorValue);
 
             const buttonFooter = CommonMenu.createDialogButtonFooterElement();
             dialog.append(buttonFooter);
@@ -109,8 +45,8 @@ class CommonMenu {
             // this.test(menu, "Test");
 
             const openMenuButtonDiv = CommonMenu.createRightSideToolbarContainer();
-            openMenuButtonDiv.id = "csic-settings-btn";
-            openMenuButtonDiv.title = 'Open "Enhanced Crowdin" extension settings'
+            openMenuButtonDiv.id = "dlaudio-settings-btn";
+            openMenuButtonDiv.title = 'Open "Deadlock Audio" extension settings'
 
             openMenuButtonDiv.append(openMenuButton);
             openMenuButtonDiv.addEventListener("click", () => CommonMenu.toggleDialog(dialog))
@@ -133,7 +69,7 @@ class CommonMenu {
         buttonElement.tabIndex = 1;
 
         const iconElement = document.createElement("i");
-        iconElement.classList.add("static-icon-csic-puzzle-piece");
+        iconElement.classList.add("static-icon-dlaudio-puzzle-piece");
 
         buttonElement.append(iconElement);
         return buttonElement;
@@ -141,10 +77,10 @@ class CommonMenu {
 
     private static createSettingsDialog(): HTMLDivElement {
         const dialog = document.createElement("div");
-        dialog.id = "csic-settings-dialog";
+        dialog.id = "dlaudio-settings-dialog";
         dialog.classList.add(..."ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable ui-dialog-buttons".split(" "));
         dialog.role = "dialog";
-        dialog.classList.add("csic-dialog-hidden");
+        dialog.classList.add("dlaudio-dialog-hidden");
 
         const titleBar = document.createElement("div");
         dialog.append(titleBar);
@@ -161,7 +97,7 @@ class CommonMenu {
         if (typeof brw !== "undefined") {
             const version = document.createElement("span");
             titleBar.append(version);
-            version.id = "csic-settings-dialog-version";
+            version.id = "dlaudio-settings-dialog-version";
             version.classList.add("small")
             version.innerText = `version ${brw.runtime.getManifest().version}`;
         }
@@ -171,7 +107,7 @@ class CommonMenu {
         closeButton.classList.add(..."ui-dialog-titlebar-close ui-corner-all".split(" "));
         closeButton.href = "#";
         closeButton.role = "button";
-        closeButton.addEventListener("click", () => dialog.classList.add("csic-dialog-hidden"));
+        closeButton.addEventListener("click", () => dialog.classList.add("dlaudio-dialog-hidden"));
 
         const closeIcon = document.createElement("span");
         closeButton.append(closeIcon);
@@ -179,8 +115,8 @@ class CommonMenu {
 
         const body = document.createElement("div");
         dialog.append(body);
-        body.id = "csic-settings-dialog-body";
-        body.classList.add(..."ui-dialog-content ui-widget-content csic-dialog-body".split(" "));
+        body.id = "dlaudio-settings-dialog-body";
+        body.classList.add(..."ui-dialog-content ui-widget-content dlaudio-dialog-body".split(" "));
 
         return dialog;
     }
@@ -220,7 +156,7 @@ class CommonMenu {
     }
 
     private static toggleDialog(dialog: HTMLDivElement): void {
-        dialog.classList.toggle("csic-dialog-hidden");
+        dialog.classList.toggle("dlaudio-dialog-hidden");
         if (dialog.checkVisibility()) {
             postMessage({
                 identifier: ExtensionMessageId.SETTINGS_DIALOG_OPENED,
@@ -228,187 +164,6 @@ class CommonMenu {
             } as ExtensionMessage<string>);
         }
     }
-
-    private static createClickBehaviorSetting(): HTMLElement {
-        const controlGroup = document.createElement("div");
-        controlGroup.classList.add("control-group");
-        controlGroup.id = "csic-setting-click-behavior";
-
-        const label = document.createElement("label");
-        controlGroup.append(label);
-        label.textContent = "Clicking on a translation in a comment...";
-        label.htmlFor = "csic-setting-click-behavior-select";
-
-        const select = document.createElement("select");
-        controlGroup.append(select);
-        select.id = label.htmlFor;
-        select.name = select.id;
-        select.classList.add("full-width");
-
-        Object.values(ClickBehaviorOption.VALUES)
-            .map(async o => {
-            const option = document.createElement("option");
-            option.value = o.id.toString();
-            option.text = o.display;
-            option.selected = o.id === (await requestSettings()).clickBehavior;
-            return option;
-        })
-            .forEach(optionPromise => optionPromise.then(o => select.append(o)))
-
-        select.addEventListener("change", async e => {
-            const selectedOption = parseInt((e.target as HTMLSelectElement).value);
-            const selectedOptionValue = ClickBehaviorOption.fromId(selectedOption);
-            if (!selectedOption) {
-                return;
-            }
-            postMessage({
-                identifier: ExtensionMessageId.SETTINGS_CLICK_BEHAVIOR_CHANGED,
-                message: selectedOptionValue.id
-            } as ExtensionMessage<number>)
-        })
-
-        listenToExtensionMessage<ExtensionSettings>(ExtensionMessageId.SETTINGS_IMPORT_SUCCESSFUL, es => {
-            for (let option of select.options) {
-                option.selected = option.value === es.clickBehavior.toString();
-            }
-        })
-        return controlGroup;
-    }
-    private static async createDefaultLanguageSetting() {
-        const controlGroup = document.createElement("div");
-        controlGroup.classList.add("control-group");
-
-        controlGroup.id = "csic-setting-default-language";
-
-        const label = document.createElement("label");
-        controlGroup.append(label);
-        label.textContent = "Default language";
-        label.htmlFor = "csic-settings-default-language-select";
-
-        const select = document.createElement("select");
-        controlGroup.append(select);
-        select.id = label.htmlFor;
-        select.name = select.id;
-        select.classList.add("full-width");
-
-        const currentDomain = await CommonContentScriptHelper.getCurrentInit().then(i => i.data.auth.domain);
-        const currentDefault = await getDefaultLanguageForDomain(currentDomain);
-
-
-        const noneOption = document.createElement("option");
-        noneOption.value = String(INVALID_LANGUAGE);
-        noneOption.text = "None";
-        noneOption.selected = INVALID_LANGUAGE === currentDefault;
-        select.append(noneOption);
-
-        for (const l1 of (await CommonContentScriptHelper.getCurrentInit())
-            .data.init_editor.project.target_languages
-            .map(async l => {
-                const option = document.createElement("option");
-                option.value = l.id;
-                option.text = l.name;
-                option.selected = parseInt(l.id) === currentDefault;
-                return option;
-            })) {
-            l1.then(o => select.append(o));
-        }
-
-        let helpBlockText = "This will apply to all projects hosted in https://crowdin.com.";
-
-        if (currentDomain) {
-            helpBlockText = `This will apply to all projects hosted in the current Crowdin Enterprise instance (${currentDomain}).`;
-        }
-
-        const helpBlock = this.createHelpBlock(helpBlockText);
-        controlGroup.append(helpBlock);
-
-        select.addEventListener("change", async () => {
-            postMessage({
-                identifier: ExtensionMessageId.SETTINGS_DOMAIN_DEFAULT_LANGUAGE_CHANGED,
-                message: new DomainLanguage(currentDomain, parseInt(select.value))
-            } as ExtensionMessage<DomainLanguage>)
-        })
-
-        listenToExtensionMessage<number>(ExtensionMessageId.SETTINGS_DOMAIN_DEFAULT_LANGUAGE_SET_BY_NOTIFICATION, l => {
-            for (let option of select.options) {
-                option.selected = option.value === l.toString();
-            }
-            postExtensionMessage<DomainLanguage>(ExtensionMessageId.SETTINGS_DOMAIN_DEFAULT_LANGUAGE_CHANGED, new DomainLanguage(currentDomain, l));
-        });
-
-        listenToExtensionMessage<ExtensionSettings>(ExtensionMessageId.SETTINGS_IMPORT_SUCCESSFUL, es => this.whenDomainLanguageChanged(es, select));
-
-        return controlGroup;
-
-    }
-
-    private static createSubmitColorValueSetting(): HTMLElement {
-        const controlGroup = document.createElement("div");
-        controlGroup.classList.add("control-group", "csic-settings-color-option");
-        controlGroup.id = "csic-settings-submit-color-value";
-
-        const inputId = controlGroup.id + "-input";
-
-        const input = document.createElement("input");
-        controlGroup.append(input);
-        input.type = "color";
-        input.id = inputId;
-        input.name = inputId;
-        requestSettings().then(es => input.value = es.submitColorValue ?? "");
-
-        const label = document.createElement("label");
-        controlGroup.append(label);
-        label.textContent = '"Submit" button color when enabled';
-        label.htmlFor = inputId;
-
-
-        input.addEventListener("input", (event: InputEvent) => postExtensionMessage<String>(ExtensionMessageId.SETTINGS_SUBMIT_COLOR_VALUE_CHANGED, (event.target as HTMLInputElement).value));
-
-        listenToExtensionMessage<ExtensionSettings>(ExtensionMessageId.SETTINGS_IMPORT_SUCCESSFUL, es => input.value = es.submitColorValue ?? "");
-
-        return controlGroup;
-
-    }
-
-    // Refactor this later.
-    private static createSubmitDisabledColorValueSetting(): HTMLElement {
-        const controlGroup = document.createElement("div");
-        controlGroup.classList.add("control-group", "csic-settings-color-option");
-        controlGroup.id = "csic-settings-submit-color-disabled-value";
-
-        const inputId = controlGroup.id + "-input";
-
-        const input = document.createElement("input");
-        controlGroup.append(input);
-        input.type = "color";
-        input.id = inputId;
-        input.name = inputId;
-        requestSettings().then(es => input.value = es.submitDisabledColorValue ?? "");
-
-        const label = document.createElement("label");
-        controlGroup.append(label);
-        label.textContent = '"Submit" button color when disabled';
-        label.htmlFor = inputId;
-
-
-        input.addEventListener("input", (event: InputEvent) => postExtensionMessage<String>(ExtensionMessageId.SETTINGS_SUBMIT_DISABLED_COLOR_VALUE_CHANGED, (event.target as HTMLInputElement).value));
-
-        listenToExtensionMessage<ExtensionSettings>(ExtensionMessageId.SETTINGS_IMPORT_SUCCESSFUL, es => input.value = es.submitDisabledColorValue ?? "");
-
-        return controlGroup;
-
-    }
-
-
-    private static whenDomainLanguageChanged(es: ExtensionSettings, select: HTMLSelectElement) {
-        getDefaultLanguageForCurrentDomainInSettings(es)
-            .then(l => {
-                for (let option of select.options) {
-                    option.selected = option.value === l.toString();
-                }
-            });
-    }
-
     private static createHelpBlock(text: string): HTMLDivElement {
         const helpBlock = document.createElement("div");
         helpBlock.classList.add("help-block", "small", "no-margin");
@@ -425,12 +180,12 @@ class CommonMenu {
         outerDiv.append(innerDiv);
         innerDiv.classList.add("ui-dialog-buttonset");
 
-        const importButton = this.createDialogButton("⤵️ Import from clipboard", "csic-settings-btn-import");
+        const importButton = this.createDialogButton("⤵️ Import from clipboard", "dlaudio-settings-btn-import");
         innerDiv.append(importButton);
         importButton.addEventListener("click", this.importSettingsFromClipboard)
 
 
-        const exportButton = this.createDialogButton("⤴️ Export to clipboard", "csic-settings-btn-export");
+        const exportButton = this.createDialogButton("⤴️ Export to clipboard", "dlaudio-settings-btn-export");
         innerDiv.append(exportButton);
         exportButton.addEventListener("click", this.exportSettingsToClipboard)
 
