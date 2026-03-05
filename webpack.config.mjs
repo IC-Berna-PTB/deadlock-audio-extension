@@ -36,7 +36,6 @@ export default {
                 [
                     {from: "src/manifest.json", to: "manifest.json"},
                     {from: "icon/128.png", to: "icon/128.png"},
-                    {from: "resource", to: "resource"},
                 ]
         }),
         new WebExtPlugin({

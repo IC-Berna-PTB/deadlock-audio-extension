@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "version": "1.0.0",
-  "name": "Deadlock Audio",
-  "description": "aaaaaaaaa",
+  "name": "Berna's extension for people that need it",
+  "description": "if you know, you know\n\nIcons by Font Awesome",
   "icons": {
     "128": "icon/128.png"
   },
@@ -44,7 +44,9 @@
       "resources": [
         "extension-settings-menu-inject.js",
         "extension-settings-server-inject.js",
+        "deadlock-audio-inject.js",
         "common-inject.js"
+
       ]
     }
   ],
