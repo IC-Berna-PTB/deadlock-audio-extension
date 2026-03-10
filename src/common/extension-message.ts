@@ -20,6 +20,7 @@ export enum ExtensionMessageId {
     SETTINGS_EXPORT_REQUESTED = "dlaudio-settings-export-requested",
     SETTINGS_EXPORT_SUCCESSFUL = "dlaudio-settings-export-successful",
     SETTINGS_AUTOPLAY_CHANGED = "dlaudio-settings-autoplay-changed",
+    SETTINGS_VOLUME_CHANGED = "dlaudio-settings-volume-changed",
     SETTINGS_REQUESTED_BY_MODULE = "dlaudio-settings-requested-by-module",
     SETTINGS_RETRIEVED = "dlaudio-settings-retrieved",
     SETTINGS_ACK = "dlaudio-settings-ack",

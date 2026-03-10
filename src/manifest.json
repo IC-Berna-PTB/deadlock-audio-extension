@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "version": "1.0.0",
-  "name": "Berna's extension for people that need it",
-  "description": "if you know, you know\n\nIcons by Font Awesome",
+  "version": "1.1.2",
+  "name": "Crowdin-Deadlock audio listener",
+  "description": "Icons by Font Awesome",
   "icons": {
     "128": "icon/128.png"
   },
@@ -24,7 +24,7 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "id": "{e4e0be78-2a47-42eb-b3bd-b2b363ac2171}",
+      "id": "{211dafb5-f047-40fd-87a9-5edd95091e6f}",
       "data_collection_permissions": {
         "required": ["none"]
       }

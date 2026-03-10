@@ -60,6 +60,15 @@ listenToBooleanSettingChange(ExtensionMessageId.SETTINGS_AUTOPLAY_CHANGED, (no, 
    return s;
 });
 
+listenToExtensionMessage<number>(ExtensionMessageId.SETTINGS_VOLUME_CHANGED, (newVolume) => {
+    getSettings()
+        .then(s => {
+            s.volume = newVolume;
+            return s;
+        })
+        .then(propagateUpdate);
+})
+
 listenToExtensionMessage<string>(
     ExtensionMessageId.SETTINGS_IMPORT_REQUESTED,
     s => importSettings(s));
