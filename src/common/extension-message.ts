@@ -10,6 +10,7 @@ export class ExtensionMessage<T> {
 export enum ExtensionMessageId {
     CROWDIN_INIT = "dlaudio-language-id",
     EDITOR_LANGUAGE_CHANGED = "dlaudio-editor-language-changed",
+    EDITOR_VIEW_CHANGED = "dlaudio-editor-view-changed",
     NOTIFICATION_SUCCESS = "dlaudio-notification-success",
     NOTIFICATION_NOTICE = "dlaudio-notification-notice",
     NOTIFICATION_ERROR = "dlaudio-notification-error",
